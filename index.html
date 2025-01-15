@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>True Telling</title>
+    <style>
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+            .container {
+                padding: 10px;
+            }
+        }
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffe5e8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Vollbildhöhe für vertikale Zentrierung */
+        }
+
+        header {
+            background-color: #FFF;
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding-left: 20px; /* Abstand vom linken Rand */
+        }
+
+        header img {
+            width: 100%; /* Passt das Bild an die Bildschirmbreite an */
+            max-width: 300px; /* Maximale Breite */
+            height: auto; /* Erhält das Seitenverhältnis */
+        }
+
+        .container {
+            background: #FFFFFF;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            width: 100%;
+            text-align: left; /* Text links ausgerichtet */
+            border: 2px solid #E31C79;
+            margin-top: 10px; /* Abstand nach oben */
+            margin-bottom: 60px; /* Platz für Fußzeile */
+            flex-grow: 1; /* Der Container nimmt den verbleibenden Platz ein */
+        }
+
+        .highlight-pink {
+            color: #E31C79;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #ffe5e8;
+            color: white;
+            padding: 1px 0;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #E31C79;
+            color: white;
+            margin: 10px 5px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #C21862;
+        }
+        .answer {
+            width: 100%;
+            height: 100px;
+            display: block;
+            padding: 10px;
+            background-color: #E31C79;
+            border: 1px solid #E31C79;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .answer:hover {
+            background-color: #C21862;
+            color: white;
+        }
+        .input-container {
+            margin-bottom: 15px;
+        }
+        .input-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-container input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .info-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: inline-block;
+            background-color: #ffe5e8;
+            color: #E31C79;
+            border: 1px solid #E31C79;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .answer-wrapper {
+        position: relative;
+        margin-bottom: 10px;
+        }
+
+        .info-button:hover {
+            background-color: #f2a179;
+            color:#E31C79;
+        }
+        .info-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #E31C79;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+            z-index: 10;
+            max-height: 70vh; /* Begrenzte Höhe */
+            overflow-y: auto; /* Scrollbar bei Bedarf */
+        }
+        .info-popup h3 {
+            margin-top: 0;
+            color: #C21862;
+        }
+        .info-popup button {
+            margin-top: 10px;
+            background-color: #C21862;
+            color: white;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }  
+        .inline {
+        display: flex;
+        gap: 30px; /* Abstand zwischen den Feldern */
+        align-items: center; /* Vertikale Zentrierung */
+        }
+
+        .date-time-input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #C21862;
+            color: white;
+            width: 150px; /* Einheitliche Breite */
+        } 
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="Logo_1.jpeg" alt="Logo">
+</header>
+
+<div class="container">
+    <div id="intro-section">
+        <h1><span class = "highlight-pink">Hey,</span></h1>
+        <p>es tut mir leid, dass du etwas erlebt hast, das dich belastet. Aber du bist nicht allein.</p>
+        <p>Wir sind <span class="highlight-pink">True Telling - Founded by Women for Chance.</span> </p>
+        <p>Sexuelle Belästigung passiert viel zu oft. Der Kommentar auf der Straße, das Anhupen, 
+            die aufdringliche Person im Club, die unerwünschte Berührung oder die Nachricht in den sozialen Medien, 
+            die einfach zu weit geht. Doch nicht nur im privaten Umfeld - auch im beruflichen Kontext kommt es vor. 
+            Und genau dort ist es oft noch schwieriger.</p>
+        <p>Zu oft nehmen wir es einfach hin. Wir fragen uns, ob wir übertreiben. Ob uns überhaupt jemand glauben würde. 
+            Ob es die Situation wert ist, etwas zu sagen. Wir wollen nicht als dramatisch gelten.</p>
+        <p>Aber lass dir eines sagen:
+            <span class = "highlight-pink">Sexuelle Belästigung ist nie in Ordnung.</span>
+            Es ist nicht deine Schuld. Und du solltest dich nicht schlecht 
+            fühlen wegen des Fehlverhaltens einer anderen Person.</p> 
+        <p><span class= "highlight-pink">Wusstest du, dass dein Arbeitgeber eine Schutzpflicht hat 
+            und sexuelle Belästigung im beruflichen Umfeld enger bewertet wird?</span></p>   
+        <p>Wenn du dich noch nicht bereit fühlst, darüber zu sprechen ist das völlig okay. Aber halte es fest. Falls es sich wiederholt. 
+            Falls es auch anderen Frauen passiert. Falls du irgendwann bereit bist, für dich einzustehen.</p>
+        <p><span class = "highlight-pink">Hier kannst du das sicher, anonym und einfach tun.</span>
+            Unser System führt dich Schritt für Schritt durch den Prozess. 
+            Am Ende erhältst du einen QR-Code mit deinen Daten - und du allein entscheidest, was du damit machst.</p>
+        <p><span class = "highlight-pink">Ob du Unterstützung brauchst, deine Rechte kennen möchtest oder den Vorfall einfach nur dokumentieren willst 
+            - es liegt in deiner Hand.</span></p>
+        <p>Wir glauben dir.</p>
+        <button id="start-btn">Zum Fragebogen</button>
+    </div>  
+     <!-- Fragebogen -->
+    <div id="questionnaire-section" class="hidden">
+        <div id="question-container"></div>
+        <div id="answers-container"></div>
+        <button id="prev-btn" class="hidden">Zurück</button>
+    </div>
+    <!-- Abschluss -->
+    <div id="summary-section" class="hidden">
+        <h2>Vielen Dank!</h2>
+        <p>Deine Antworten wurden gespeichert. Klicken Sie unten, um Ihre PDF herunterzuladen:</p>
+        <button id="download-btn">PDF herunterladen</button>
+        <button id="restart-btn">Nochmal ausfüllen</button>
+    </div>
+
+     <!-- Info-Popup -->
+     <div id="info-popup" class="hidden">
+        <div class="overlay" id="info-overlay"></div>
+        <div class="info-popup">
+            <h3 id="info-title">Information</h3>
+            <p id="info-text"></p>
+            <div id="infoSection"></div>
+            <button id="close-info">Schließen</button>
+        </div>
+    </div> 
+    
+    
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+<script>
+    const questions = [
+        {
+            question: "Hast du Erfahrungen mit unangemessenem oder ungewolltem Verhalten gemacht, das als sexuelle Belästigung empfunden werden könnte?",
+            type: "choice",
+            answers: ["Ja", "Ich bin mir nicht sicher"],
+            info: ["Diese Frage hilft uns zu verstehen, ob ein Vorfall vorliegt.", 
+            "Es tut uns leid, dass du dich möglicherweise in einer schwierigen Situation befindest oder dir Sorgen machst. Bitte fülle den Fragebogen aus, damit wir das Ereignis dokumentieren und dir bestmöglich helfen können."]
+        },
+        {
+            question: "In welcher Situation kam es zu dem Vorfall?",
+            type: "choice",
+            answers: ["Bei der Bewerbung", "Im Beschäftigungsverhältnis", "Bei der Kündigung"],
+            info: ["Sexuelle Belästigung kann auch während eines Bewerbungsverfahrens vorkommen. Beispiele hierfür sind:<br>" +
+                        "1. Unangemessene Kommentare: Der Interviewer macht anzügliche oder sexuelle Bemerkungen zu Ihrem Aussehen oder Ihrer Kleidung.<br>" +
+                        "2. Unzulässige persönliche Fragen: Fragen zu Beziehungsstatus, Familienplanung oder Sexualität.<br>" +
+                        "3. Körperliche Übergriffe: Ungewollte Berührungen, wie das „zufällige“ Streifen der Hand.<br>" +
+                        "4. Eindeutige Angebote: Es wird angedeutet, dass die Stelle bei Zustimmung zu einer unangemessenen Bitte sicher ist.<br>" +
+                        "5. Verstörende Nachrichten: Nachrichten oder E-Mails mit unangemessenen Inhalten nach dem Gespräch.",
+                        
+                        "Hier können Vorfälle im Arbeitsalltag auftreten, wie unerwünschte Berührungen oder anzügliche Kommentare.<br>" +
+                        
+                        "Bei der Kündigung: Auch im Zuge einer Kündigung können unangemessene Bemerkungen oder Handlungen vorkommen.<br>" +
+                        "Beispiele für sexuelle Belästigung im Arbeitsverhältnis sind: <br>" +
+                        "1. Unangemessene Kommentare über dein Aussehen oder deinen Körper. <br>" +
+                        "2. Unerwünschte körperliche Berührungen wie Umarmungen oder Berührungen an den Schultern. <br>" +
+                        "3. Sexuelle Angebote im Austausch für berufliche Vorteile. <br>" +
+                        "4. Anstößige E-Mails oder Nachrichten. <br>" +
+                        "5. Sexistische Witze oder Bemerkungen. <br>" +
+                        "6. Unerwünschte Annäherungen oder Fragen zu deinem Privatleben.",
+                        
+                        "Beispiele für sexuelle Belästigung bei der Kündigung sind: <br>" +
+                        "1. Wenn dir gesagt wird, dass du deine Kündigung nur zurücknehmen kannst, wenn du sexuelle Gefälligkeiten gewährst. <br>" +
+                        "2. Dein Arbeitgeber droht dir mit Kündigung, falls du seine sexuellen Annäherungsversuche ablehnst. <br>" +
+                        "3. Der Arbeitgeber sucht unangemessenen Kontakt, z.B. anhaltendes Starren oder unerwünschte Berührungen, und kündigt dir, wenn du dich weigerst. <br>" +
+                        "4. Sexistische oder anstößige Bemerkungen im Kündigungsgespräch, die auf dein Aussehen oder dein Verhalten abzielen. <br>" +
+                        "5. Eine Kündigung, die mit der Ablehnung sexueller Annäherungsversuche in Verbindung steht."]
+        },
+        {
+            question: "Hat der Vorfall in den letzten zwei Monaten stattgefunden?",
+            type: "choice",
+            answers: ["Ja", "Nein", "Es dauert noch an"],
+            info: ["Alle Beschäftigten haben das Recht, sich an die zuständige Stelle im Unternehmen zu wenden, wenn du das Gefühl hast, aufgrund des Allgemeinen Gleichbehandlungsgesetzes (AGG) benachteiligt worden zu sein. Die Beschwerdestelle muss dabei im Betrieb bekannt gemacht und transparent sein (§ 12 Abs. 5 AGG). Sie ist verpflichtet, die Beschwerde gründlich zu prüfen und der betroffenen Person das Ergebnis der Prüfung mitzuteilen. Beschäftigte, die eine Beschwerde einlegen, dürfen keinerlei Nachteile erfahren; Abmahnungen oder Kündigungen aufgrund einer solchen Beschwerde sind ausdrücklich verboten (§ 16 Abs. 1 AGG). Darüber hinaus haben Beschäftigte das Recht auf präventive und intervenierende Schutzmaßnahmen durch den Arbeitgeber (§ 12 Abs. 1 – 4 AGG). <br><br>" +
+                        "Betroffene können ihre Beschwerde darüber hinaus auch gemäß dem Betriebsverfassungsgesetz an den Betriebsrat richten (§ 84 BetrVG). In vielen Fällen ist die Beschwerdestelle bereits beim Betriebsrat eingerichtet, sodass keine separate Stelle erforderlich ist. In jedem Fall sind Arbeitgeber*innen verpflichtet, dafür zu sorgen, dass sexuelle Belästigung im Unternehmen in Zukunft verhindert wird und entsprechende Maßnahmen ergriffen werden. <br><br>"+
+                        "Betroffene sexueller Belästigung am Arbeitsplatz haben in bestimmten Fällen einen Anspruch auf Schadensersatz und/oder Entschädigung gegenüber ihrem Arbeitgeber. Dies umfasst zum Beispiel die Übernahme von Arzt- oder Therapiekosten (Schadensersatz) sowie die Möglichkeit der Zahlung von Schmerzensgeld als Entschädigung für erlittene Schmerzen oder seelische Belastungen. <br><br>" +
+                        "Die Ansprüche auf Schadensersatz oder Entschädigung müssen innerhalb von zwei Monaten schriftlich beim Arbeitgeber geltend gemacht werden. Nachdem die Ansprüche eingereicht wurden, haben betroffene Personen weitere drei Monate Zeit, um diese vor dem Arbeitsgericht einzuklagen. <br><br>" +
+                        "Mach dir keine Sorgen. Du bist nicht allein. Wir stehen an deiner Seite.", "Je früher sexuelle Belästigung gemeldet wird, desto besser. Für die Meldung selbst gibt es keine Fristen, jedoch gelten Fristen, wenn betroffene Personen Schadensersatz oder Entschädigung verlangen möchten. Leider kannst du deinen Arbeitgeber nicht mehr vor dem Arbeitsgericht verklagen, weil die Frist von zwei Monaten bereits abgelaufen ist.",
+                        "Alle Beschäftigten haben das Recht, sich an die zuständige Stelle im Unternehmen zu wenden, wenn du das Gefühl hast, aufgrund des Allgemeinen Gleichbehandlungsgesetzes (AGG) benachteiligt worden zu sein. Die Beschwerdestelle muss dabei im Betrieb bekannt gemacht und transparent sein (§ 12 Abs. 5 AGG). Sie ist verpflichtet, die Beschwerde gründlich zu prüfen und der betroffenen Person das Ergebnis der Prüfung mitzuteilen. Beschäftigte, die eine Beschwerde einlegen, dürfen keinerlei Nachteile erfahren; Abmahnungen oder Kündigungen aufgrund einer solchen Beschwerde sind ausdrücklich verboten (§ 16 Abs. 1 AGG). Darüber hinaus haben Beschäftigte das Recht auf präventive und intervenierende Schutzmaßnahmen durch den Arbeitgeber (§ 12 Abs. 1 – 4 AGG). <br><br>" +
+                        "Betroffene können ihre Beschwerde darüber hinaus auch gemäß dem Betriebsverfassungsgesetz an den Betriebsrat richten (§ 84 BetrVG). In vielen Fällen ist die Beschwerdestelle bereits beim Betriebsrat eingerichtet, sodass keine separate Stelle erforderlich ist. In jedem Fall sind Arbeitgeber*innen verpflichtet, dafür zu sorgen, dass sexuelle Belästigung im Unternehmen in Zukunft verhindert wird und entsprechende Maßnahmen ergriffen werden. <br><br>"+
+                        "Betroffene sexueller Belästigung am Arbeitsplatz haben in bestimmten Fällen einen Anspruch auf Schadensersatz und/oder Entschädigung gegenüber ihrem Arbeitgeber. Dies umfasst zum Beispiel die Übernahme von Arzt- oder Therapiekosten (Schadensersatz) sowie die Möglichkeit der Zahlung von Schmerzensgeld als Entschädigung für erlittene Schmerzen oder seelische Belastungen. <br><br>" +
+                        "Die Ansprüche auf Schadensersatz oder Entschädigung müssen innerhalb von zwei Monaten schriftlich beim Arbeitgeber geltend gemacht werden. Nachdem die Ansprüche eingereicht wurden, haben betroffene Personen weitere drei Monate Zeit, um diese vor dem Arbeitsgericht einzuklagen. <br><br>" +
+                        "Mach dir keine Sorgen. Du bist nicht allein. Wir stehen an deiner Seite."]
+        },
+        {
+            question: "Welche der folgenden Formen sexueller Belästigung hast du erlebt?",
+            type: "choice",
+            answers: ["Verbal", "Non-Verbal", "Physisch"],
+            info: ["1. Sexuell anzügliche Bemerkungen und Witze <br>" + 
+                "2. Aufdringliche und beleidigende Kommentare über die Kleidung, das Aussehen oder das Privatleben <br>" + 
+                "3. Sexuell zweideutige Kommentare <br>" +
+                "4. Fragen mit sexuellem Inhalt, zum Beispiel zum Privatleben oder zur Intimsphäre <br>" + 
+                "5. Aufforderungen zu intimen oder sexuellen Handlungen, zum Beispiel „Setz dich auf meinen Schoß!“ <br>" +
+                "6. Sexualisierte oder unangemessene Einladungen zu einer Verabredung",
+                "1. Aufdringliches oder einschüchterndes Starren oder anzügliche Blicke <br>" +
+                "2. Hinterherpfeifen <br>" +
+                "3. Unerwünschte E-Mails, SMS, Fotos oder Videos mit sexuellem Bezug <br>" +
+                "4. Unangemessene und aufdringliche Annäherungsversuche in sozialen Netzwerken <br>" +
+                "5. Aufhängen oder Verbreiten pornografischen Materials <br>" +
+                "6. Unsittliches Entblößen",
+                "1. Jede unerwünschte Berührung (Tätscheln, Streicheln, Kneifen, Umarmen, Küssen), auch wenn die Berührung scheinbar zufällig geschieht <br>" +
+                "2. Wiederholte körperliche Annäherung, wiederholtes Herandrängeln, wiederholt die übliche körperliche Distanz (ca. eine Armlänge) nicht wahren <br>" +
+                "3. Körperliche Gewalt sowie jede Form sexualisierter Übergriffe bis hin zu Vergewaltigung"]
+        },
+        {
+            question: "Wann ist es passiert?",
+            type: "datetime",
+            info: []
+        },
+        {
+            question: "Was möchten Sie tun?",
+            type: "choice",
+            answers: ["Unterstützung", "Dokumentieren", "Rechte erfahren"],
+            info: ["Hilfetelefon „Gewalt gegen Frauen“: 08000 116 016 (kostenlos, anonym, 24/7) <br>" + 
+                "WEISSER RING (Opferschutzorganisation): 116 006 (kostenlos, für Opfer von Kriminalität) <br>" +
+                "Online-Beratung: Viele Organisationen bieten anonyme Beratung per Chat oder E-Mail an. <br>" +
+                "Wir sind für dich da. Schreibe uns eine Email: info@true-telling.de",
+                "Schreibe detailliert auf, was passiert ist: Datum, Uhrzeit, Ort, beteiligte Personen und mögliche Zeugen. <br>" +
+                "Sichere Nachrichten, E-Mails oder andere Beweise. <br>" + 
+                "Wir sind für dich da. Schreibe uns eine Email: info@true-telling.de",
+                "Wende dich an eine Rechtsberatung, um deine Optionen zu klären. <br>" +
+                "Wir sind für sich da. Schreibe uns eine Email: info@true-telling.de"]
+        },
+    ];
+
+    let currentQuestionIndex = 0;
+    const answers = [];
+
+    const introSection = document.getElementById('intro-section');
+    const questionnaireSection = document.getElementById('questionnaire-section');
+
+    const summarySection = document.getElementById('summary-section');
+    const infoPopup = document.getElementById('info-popup');
+
+    const questionContainer = document.getElementById('question-container');
+    const answersContainer = document.getElementById('answers-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const restartBtn = document.getElementById('restart-btn');
+
+    const infoTitle = document.getElementById('info-title');
+    const infoText = document.getElementById('info-text');
+    const closeInfo = document.getElementById('close-info');
+    const infoOverlay = document.getElementById('info-overlay');
+
+    function showIntro() {
+        introSection.classList.remove('hidden');
+        questionnaireSection.classList.add('hidden');
+        summarySection.classList.add('hidden');
+    }
+
+    function showQuestionnaire() {
+        introSection.classList.add('hidden');
+        questionnaireSection.classList.remove('hidden');
+        summarySection.classList.add('hidden');
+        showQuestion(currentQuestionIndex);
+    }
+
+    function showSummary() {
+        introSection.classList.add('hidden');
+        questionnaireSection.classList.add('hidden');
+        summarySection.classList.remove('hidden');
+    }
+
+    function showQuestion(index) {
+        const questionObj = questions[index];
+        questionContainer.innerHTML = `<div style="font-size: 24px; margin-bottom: 20px;">${questionObj.question}</div>`;
+        answersContainer.innerHTML = '';
+
+        if (questionObj.type === "datetime") {
+            const inputContainer = document.createElement('div');
+            inputContainer.className = 'input-container inline';
+
+            const dateDiv = document.createElement('div');
+            const dateLabel = document.createElement('label');
+            dateLabel.setAttribute('for', 'date-input');
+            dateLabel.textContent = 'Datum:';
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.id = 'date-input';
+            dateInput.className = 'date-time-input';
+            dateDiv.appendChild(dateLabel);
+            dateDiv.appendChild(dateInput);
+
+            const timeDiv = document.createElement('div');
+            const timeLabel = document.createElement('label');
+            timeLabel.setAttribute('for', 'time-input');
+            timeLabel.textContent = 'Uhrzeit:';
+            const timeInput = document.createElement('input');
+            timeInput.type = 'time';
+            timeInput.id = 'time-input';
+            timeInput.className = 'date-time-input';
+            timeDiv.appendChild(timeLabel);
+            timeDiv.appendChild(timeInput);
+
+            inputContainer.appendChild(dateDiv);
+            inputContainer.appendChild(timeDiv);
+
+            answersContainer.appendChild(inputContainer);
+
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Weiter';
+            nextBtn.addEventListener('click', () => {
+                if (dateInput.value && timeInput.value) {
+                    answers[index] = `${dateInput.value} ${timeInput.value}`;
+                    nextQuestion();
+                } else {
+                    alert('Bitte Datum und Uhrzeit eingeben.');
+                }
+            });
+            answersContainer.appendChild(nextBtn);
+        } else if (questionObj.type === "choice") {
+                     // Antwortbuttons und Info-Buttons erstellen
+                     questionObj.answers.forEach((answer, i) => {
+            // Erstelle einen Wrapper für jede Antwort
+            const answerWrapper = document.createElement('div');
+            answerWrapper.className = 'answer-wrapper';
+
+            // Antwortbutton
+            const answerBtn = document.createElement('button');
+            answerBtn.textContent = answer;
+            answerBtn.className = 'answer';
+            answerBtn.addEventListener('click', () => {
+		
+        answers[index] = answer;
+        nextQuestion();
+});
+            answerWrapper.appendChild(answerBtn);
+
+            // Info-Button für jede Antwort
+            const infoBtn = document.createElement('button');
+            infoBtn.textContent = 'i';
+            infoBtn.className = 'info-button';
+            infoBtn.addEventListener('click', () => showInfo(questionObj.info[i]));
+            answerWrapper.appendChild(infoBtn);
+
+            // Füge den Wrapper zur Container-Div hinzu
+            answersContainer.appendChild(answerWrapper);
+        });
+
+        }
+
+        prevBtn.classList.toggle('hidden', index === 0);
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+        } else {
+            showSummary();
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            showQuestion(currentQuestionIndex);
+        }
+    });
+
+    function generatePDF() {
+    const { PDFDocument, rgb } = PDFLib;
+
+    // Erstelle das PDF-Dokument
+    PDFDocument.create().then(async (pdfDoc) => {
+        let page = pdfDoc.addPage([600, 400]);
+        let yOffset = 350;
+        const maxLineWidth = 500;  // Maximale Breite für den Text
+
+
+        page.drawText('Ihre Antworten:', { x: 50, y: yOffset, size: 18, color: rgb(0, 0, 0) });
+        yOffset -= 30;
+
+        // Durchlaufe alle Fragen und Antworten
+        answers.forEach((answer, index) => {
+            const question = questions[index].question;
+            const text = `${question}: ${answer}`;
+
+            // Text umbrechen
+            const lines = wrapText(text, maxLineWidth);
+
+            // Zeichne jede Zeile auf der Seite
+            lines.forEach(line => {
+                // Wenn der Text nicht mehr auf die Seite passt, neue Seite hinzufügen
+                if (yOffset < 50) {
+                    page = pdfDoc.addPage([600, 400]);
+                    yOffset = 350;
+                }
+
+                page.drawText(line, { x: 50, y: yOffset, size: 12, color: rgb(0, 0, 0) });
+                yOffset -= 20;
+            });
+        });
+
+        // Speichere die PDF als Blob
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+
+        // Erstelle den Download-Link
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'True_Telling.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+}
+
+// Funktion zum Umbruch des Textes
+function wrapText(text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+    let lineWidth = 0;
+    const fontSize = 12;  // Schriftgröße
+
+    words.forEach(word => {
+        const wordWidth = word.length * fontSize * 0.6;  // Schätzung der Wortbreite (mit Faktor 0.6)
+
+        if (lineWidth + wordWidth > maxWidth) {
+            lines.push(currentLine.trim());
+            currentLine = word + ' ';
+            lineWidth = wordWidth;
+        } else {
+            currentLine += word + ' ';
+            lineWidth += wordWidth;
+        }
+    });
+
+    if (currentLine.length > 0) {
+        lines.push(currentLine.trim());
+    }
+
+    return lines;
+}
+
+        function showInfo(infoTextContent) {
+            infoTitle.textContent = "Information";
+            infoText.innerHTML = infoTextContent;
+            infoPopup.classList.remove('hidden');
+        }
+
+        function hideInfo() {
+            infoPopup.classList.add('hidden');
+        }
+
+        // Event Listener
+        document.getElementById('start-btn').addEventListener('click', showQuestionnaire);
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        });
+        downloadBtn.addEventListener('click', generatePDF);
+        restartBtn.addEventListener('click', () => {
+            answers.length = 0;
+            currentQuestionIndex = 0;
+            showIntro();
+        });
+        closeInfo.addEventListener('click', hideInfo);
+        infoOverlay.addEventListener('click', hideInfo);
+
+        // Start mit Einleitung
+        showIntro();
+
+        document.getElementById("infoSection").innerHTML = info.join("<br><br>");
+</script>
+
+<footer>
+    <p>&copy; 2025 True Telling. Alle Rechte vorbehalten.</p>
+</footer>
+
+</body>
+</html>
